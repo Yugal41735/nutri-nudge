@@ -3,6 +3,7 @@
 const express = require('express');
 const cors = require('cors');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const getProductDetails = require('./openFoodFacts');
 
 const app = express();
 const PORT = 3000;
@@ -30,7 +31,33 @@ const generationConfig = {
 // Route to handle Gemini analysis
 app.post('/analyze', async (req, res) => {
   try {
-    const { ingredientsOrNutrition, userPreferences } = req.body;
+    const { productName, ingredientsOrNutrition, userPreferences } = req.body;
+
+    let ingredients, nutrients, nutriscoreGrade;
+
+    try{
+      const productDetails = await getProductDetails(productName);
+      ingredients = productDetails.ingredients;
+      nutrients = JSON.stringify(productDetails.nutrients);
+      nutriscoreGrade = productDetails.nutriscoreGrade;
+    } catch(error) {
+      console.error("Error retrieving product from OpenFoodFacts:", error);
+      console.error("Falling back to extracted data as product not found in OpenFoodFacts.");
+      ingredients = "Ingredients not available";
+      nutrients = "Nutritional information not available";
+    }
+
+    let input;
+
+    if(ingredients == "Ingredients not available" || nutrients == "Nutritional information not available" || Object.keys(nutrients).length === 0) {
+      input = ingredientsOrNutrition;
+    } else {
+      input = ingredients + "\n\n" + nutrients;
+    }
+
+    // console.log("Input for Gemini Model:", input);
+
+
 
     // Build prompt with user preferences
     let prompt = `Based on the given nutrient information or ingredients, answer the following question:\n`;
@@ -54,7 +81,7 @@ app.post('/analyze', async (req, res) => {
 
     const parts = [
       { text: prompt },
-      { text: `input: ${ingredientsOrNutrition}\n\n` },
+      { text: `input: ${input}\n\n` },
       { text: "output: " },
     ];
 

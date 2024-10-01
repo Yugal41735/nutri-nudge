@@ -12,6 +12,7 @@
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
     "@google/generative-ai": "^0.20.0",
+    "axios": "^1.7.7",
     "babel-loader": "^9.2.1",
     "cors": "^2.8.5",
     "express": "^4.21.0",

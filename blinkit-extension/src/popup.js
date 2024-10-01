@@ -6,16 +6,21 @@ document.getElementById('extract-button').addEventListener('click', () => {
     const allergies = document.getElementById('allergies').value.trim();
     const dietPlan = document.getElementById('diet-plan').value;
 
+    // Show a loading message while waiting for the backend response
+    document.getElementById('loading-message').style.display = 'block';
+
     // Query the active tab in the current window
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, { action: "extractProductInfo" }, async (response) => {
             if (response) {
                 let ingredientsOrNutrition = response.productIngredients || response.productNutrition;
+                let productName = response.productName;
 
                 if (ingredientsOrNutrition) {
                     try {
                         // Prepare the data to be sent to the backend, including user preferences
                         const requestData = {
+                            productName,
                             ingredientsOrNutrition,
                             userPreferences: {
                                 diabetes,
@@ -32,6 +37,11 @@ document.getElementById('extract-button').addEventListener('click', () => {
                             },
                             body: JSON.stringify(requestData)
                         });
+
+                        // Check if the response is okay
+                        if (!analysisResponse.ok) {
+                            throw new Error(`Server responded with status ${analysisResponse.status}`);
+                        }
 
                         const analysisData = await analysisResponse.json();
 
@@ -77,3 +87,15 @@ document.getElementById('extract-button').addEventListener('click', () => {
         });
     });
 });
+
+// Show a loading message while waiting for the backend response
+function showLoading() {
+    const loadingElement = document.createElement('div');
+    loadingElement.id = 'loading-message';
+    loadingElement.innerText = 'Processing... Please wait.';
+    document.body.appendChild(loadingElement);
+    loadingElement.style.display = 'none';
+}
+
+// Call this to add the loading message element when the page loads
+showLoading();
