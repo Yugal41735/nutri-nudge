@@ -39,7 +39,7 @@ To test NutriNudge locally:
    ```
 2. Navigate to the project directory:
    ```bash
-   cd nutrinudge
+   cd nutri-nudge
    ```
 3. Install the necessary Node.js dependencies:
    ```bash
