@@ -35,7 +35,7 @@ To test NutriNudge locally:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/nutrinudge.git
+   git clone https://github.com/Yugal41735/nutri-nudge.git
    ```
 2. Navigate to the project directory:
    ```bash
