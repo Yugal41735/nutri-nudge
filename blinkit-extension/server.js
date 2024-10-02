@@ -63,6 +63,7 @@ app.post('/analyze', async (req, res) => {
     let prompt = `Based on the given nutrient information or ingredients, answer the following question:\n`;
     prompt += `Nutritional Analysis - Higher presence of nutrients desired in low qty (fats, sugar, sodium, calories)\n`;
     prompt += `How processed and nutrient deficit is the product?\nHarmful Ingredients present\n`;
+    prompt += "answer following questions in structured format and in json format\n\njson structure should be in below format:\n\n{\n  \"nutritional_analysis\": {\n    \"high_in\": \"Sodium,\n\"low_in\": \"calories, fat\"\n},\n    \"processed\": \"Minimally processed\",\n    \"nutrient_deficit\": \"May be deficient in vitamins and minerals, depending on the specific preparation method.\",\n    \"harmful_ingredients\": {},\n  \"suitable_for_diabetes\": \"Not recommended for people with diabetes due to the high sugar content.\",\n  \"allergens\": { \"Garlic\" : \"Yes\"\n  },\n\"Vegetarian\" : \"Yes\n}\n``` \n\nAbove is just an example, modify it based on ingridients or nutrietents mentioned\nNo need of explanation\nThe things that are mentioned in above example, if it is not mentioned in input, dont include them"
 
     // Add user preferences to the prompt for personalized analysis
     if (userPreferences) {

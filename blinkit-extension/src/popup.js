@@ -60,7 +60,73 @@ document.getElementById('extract-button').addEventListener('click', () => {
 
                         // Add the raw analysis from Gemini model without cleaning or formatting
                         if (analysisData.analysis) {
-                            message += `<br><br><strong>Gemini Analysis (Raw Output):</strong><br>${analysisData.analysis}`;
+                            // Sanitize the raw output and remove unwanted parts like ```json and ```
+                            analysisData.analysis = analysisData.analysis.slice(3);
+                            analysisData.analysis = analysisData.analysis.slice(0,-4);
+                            let rawAnalysis = analysisData.analysis;
+                            rawAnalysis = rawAnalysis.replace(/^json\s*/, '').trim();
+                            console.log(rawAnalysis);
+
+                            // Parse the cleaned JSON string
+                            let analysis;
+                            try {
+                                analysis = JSON.parse(rawAnalysis);
+                            } catch (error) {
+                                console.error("Error parsing analysis data:", error);
+                                analysis = null;
+                            }
+
+                            // message += `<br><br><strong>Gemini Analysis (Raw Output):</strong><br>${rawAnalysis}`;
+
+                            // Format the analysis data if it was successfully parsed
+                            if (analysis) {
+                                message += `<br><br><strong>Gemini Analysis:</strong>`;
+                                
+                                message += `
+                                    <strong>Nutritional Analysis:</strong>
+                                    <ul>
+                                        <li><strong>High in:</strong> ${analysis.nutritional_analysis.high_in
+                                            ? analysis.nutritional_analysis.high_in.split(', ').map(nutrient => `<span class="badge high-nutrient">${nutrient}</span>`).join(', ')
+                                            : 'None'}</li>
+                                        <li><strong>Low in:</strong> ${analysis.nutritional_analysis.low_in
+                                            ? analysis.nutritional_analysis.low_in.split(', ').map(nutrient => `<span class="badge low-nutrient">${nutrient}</span>`).join(', ')
+                                            : 'None'}</li>
+                                    </ul>
+                                    <p><strong>Processing Level:</strong> <span class="processed">${analysis.processed}</span></p>
+                                    <p><strong>Nutrient Deficit:</strong> <span class="nutrient-deficit">${analysis.nutrient_deficit}</span></p>
+                                    <p><strong>Harmful Ingredients:</strong> ${
+                                        Object.keys(analysis.harmful_ingredients).length > 0
+                                            ? Object.entries(analysis.harmful_ingredients).map(([type, ingredients]) => 
+                                                `<span class="harmful-ingredient"><strong>${type}:</strong> ${ingredients}</span>`).join('<br>')
+                                            : 'None identified'
+                                    }</p>
+                                    <strong>Diet Suitability:</strong>
+                                    <ul>
+                                        <li><strong>Diabetes:</strong> ${analysis.suitable_for_diabetes.includes("Not")
+                                            ? `<span class="not-suitable">❌ ${analysis.suitable_for_diabetes}</span>`
+                                            : `<span class="suitable">✔ ${analysis.suitable_for_diabetes}</span>`}</li>
+                                        <li><strong>Allergens:</strong><br> ${Object.keys(analysis.allergens).length > 0
+                                            ? Object.entries(analysis.allergens).map(([allergen, value]) => value === "Yes"
+                                                ? `⚠️ Contains ${allergen}`
+                                                : `✔ Free from ${allergen}`).join('<br>')
+                                            : 'No allergens specified'}</li>
+                                        <li><strong>Vegetarian:</strong> ${analysis.Vegetarian === "Yes"
+                                            ? `<span class="suitable">✔ Suitable for vegetarians</span>`
+                                            : `<span class="not-suitable">❌ Not suitable for vegetarians</span>`}</li>
+                                        <li><strong>Keto:</strong> ${analysis.Keto === "Yes"
+                                            ? `<span class="suitable">✔ Suitable for keto</span>`
+                                            : `<span class="not-suitable">❌ Not suitable for keto</span>`}</li>
+                                        <li><strong>Vegan:</strong> ${analysis.Vegan === "Yes"
+                                            ? `<span class="suitable">✔ Suitable for vegans</span>`
+                                            : `<span class="not-suitable">❌ Not suitable for vegans</span>`}</li>
+                                        <li><strong>Paleo:</strong> ${analysis.Paleo === "Yes"
+                                            ? `<span class="suitable">✔ Suitable for paleo</span>`
+                                            : `<span class="not-suitable">❌ Not suitable for paleo</span>`}</li>
+                                    </ul>
+                                `;
+                            } else {
+                                message += `<br><br><strong>Gemini Analysis (Raw Output):</strong><br>${rawAnalysis}`;
+                            }
                         }
 
                         // Add user preferences to the output
@@ -82,7 +148,7 @@ document.getElementById('extract-button').addEventListener('click', () => {
                     } catch (error) {
                         // Hide the loading message if an error occurs
                         loadingElement.style.display = 'none';
-                        
+
                         // Log error details to the console
                         console.error("Error processing analysis:", error);
                         alert("Error processing analysis. Check console for details.");
