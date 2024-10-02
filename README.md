@@ -54,7 +54,7 @@ To test NutriNudge locally:
 
 1. Open **Google Chrome** and navigate to `chrome://extensions/`.
 2. Enable **Developer mode** in the top right corner.
-3. Click on **Load unpacked** and select the `nutrinudge` extension directory.
+3. Click on **Load unpacked** and select the `nutri-nudge` extension directory.
 
 ### Running the Extension
 
