@@ -1,5 +1,3 @@
-// src/popup.js
-
 document.getElementById('extract-button').addEventListener('click', () => {
     // Collect user preferences
     const diabetes = document.getElementById('diabetes').checked;
@@ -7,7 +5,8 @@ document.getElementById('extract-button').addEventListener('click', () => {
     const dietPlan = document.getElementById('diet-plan').value;
 
     // Show a loading message while waiting for the backend response
-    document.getElementById('loading-message').style.display = 'block';
+    const loadingElement = document.getElementById('loading-message');
+    loadingElement.style.display = 'block';
 
     // Query the active tab in the current window
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -38,54 +37,74 @@ document.getElementById('extract-button').addEventListener('click', () => {
                             body: JSON.stringify(requestData)
                         });
 
-                        // Check if the response is okay
                         if (!analysisResponse.ok) {
                             throw new Error(`Server responded with status ${analysisResponse.status}`);
                         }
 
                         const analysisData = await analysisResponse.json();
 
+                        // Hide the loading message after receiving the response
+                        loadingElement.style.display = 'none';
+
                         // Print the response to the console for debugging purposes
                         console.log("Analysis Response from Backend:", analysisData);
 
-                        // Display the product info, raw analysis, and user preferences in an alert box
-                        let message = `Product: ${response.productName || 'N/A'}`;
+                        // Populate the modal with analysis results
+                        let message = `<strong>Product:</strong> ${response.productName || 'N/A'}`;
                         if (response.productIngredients) {
-                            message += `\nIngredients: ${response.productIngredients}`;
+                            message += `<br><strong>Ingredients:</strong> ${response.productIngredients}`;
                         }
                         if (response.productNutrition) {
-                            message += `\nNutrition Information: ${response.productNutrition}`;
+                            message += `<br><strong>Nutrition Information:</strong> ${response.productNutrition}`;
                         }
 
                         // Add the raw analysis from Gemini model without cleaning or formatting
                         if (analysisData.analysis) {
-                            message += `\n\nGemini Analysis (Raw Output):\n${analysisData.analysis}`;
+                            message += `<br><br><strong>Gemini Analysis (Raw Output):</strong><br>${analysisData.analysis}`;
                         }
 
                         // Add user preferences to the output
-                        message += `\n\nUser Preferences:\n`;
-                        message += diabetes ? `- Has diabetes\n` : '- No diabetes\n';
+                        message += `<br><br><strong>User Preferences:</strong><br>`;
+                        message += diabetes ? `- Has diabetes<br>` : '- No diabetes<br>';
                         if (allergies) {
-                            message += `- Allergies: ${allergies}\n`;
+                            message += `- Allergies: ${allergies}<br>`;
                         }
                         if (dietPlan && dietPlan !== "none") {
-                            message += `- Follows a ${dietPlan} diet\n`;
+                            message += `- Follows a ${dietPlan} diet<br>`;
                         }
 
-                        alert(message);
+                        document.getElementById('analysis-results').innerHTML = message;
+
+                        // Show the modal
+                        const modal = document.getElementById('analysis-modal');
+                        modal.style.display = 'block';
+
                     } catch (error) {
+                        // Hide the loading message if an error occurs
+                        loadingElement.style.display = 'none';
+                        
                         // Log error details to the console
                         console.error("Error processing analysis:", error);
                         alert("Error processing analysis. Check console for details.");
                     }
                 } else {
+                    // Hide the loading message if no product information was found
+                    loadingElement.style.display = 'none';
                     alert("No ingredients or nutrition information found to analyze.");
                 }
             } else {
+                // Hide the loading message if product information couldn't be extracted
+                loadingElement.style.display = 'none';
                 alert("Product information could not be extracted. Please try again.");
             }
         });
     });
+});
+
+// Modal close button functionality
+document.querySelector('.close-button').addEventListener('click', () => {
+    const modal = document.getElementById('analysis-modal');
+    modal.style.display = 'none';
 });
 
 // Show a loading message while waiting for the backend response
@@ -93,9 +112,9 @@ function showLoading() {
     const loadingElement = document.createElement('div');
     loadingElement.id = 'loading-message';
     loadingElement.innerText = 'Processing... Please wait.';
-    document.body.appendChild(loadingElement);
     loadingElement.style.display = 'none';
+    document.body.appendChild(loadingElement);
 }
 
-// Call this to add the loading message element when the page loads
+// Add the loading message element when the page loads
 showLoading();

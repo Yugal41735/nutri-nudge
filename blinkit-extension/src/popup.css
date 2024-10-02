@@ -1,0 +1,104 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px; /* Add padding for better appearance */
+    max-width: 100%; /* Ensure it can use full popup width */
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#user-preferences {
+    font-size: 1.1rem; /* Increase font size for better readability */
+    line-height: 1.8;
+}
+
+label {
+    margin-top: 10px;
+    display: block;
+}
+
+input[type="text"], select {
+    width: 100%; /* Make sure inputs take the full width */
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    width: 100%; /* Take the full width of the container */
+    padding: 15px;
+    font-size: 1.1rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0,0,0,0.4); 
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 3% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%; 
+    max-width: 1200px;
+    max-height: 85vh;
+    border-radius: 10px;
+    overflow-y: auto; /* Allow scrolling */
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#analysis-results {
+    margin-top: 15px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+#loading-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-size: 1.2em;
+    color: #333;
+    z-index: 2; /* Ensure it appears above other content */
+    text-align: center;
+}

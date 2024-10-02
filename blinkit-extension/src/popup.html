@@ -1,56 +1,53 @@
-<!-- src/popup.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Product Info Extractor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Analysis</title>
+    <link rel="stylesheet" href="popup.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            width: 400px; /* Increased width */
-            height: 500px; /* Increased height */
-            overflow-y: auto; /* Allows scrolling if the content exceeds height */
-        }
-        #extract-button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .form-section {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin: 5px 0;
+            width: 600px; /* Increase the width to 600px */
+            height: auto;
+            max-height: 800px; /* Ensure height doesn't exceed typical screen sizes */
+            margin: 0;
+            padding: 10px;
+            overflow: hidden;
         }
     </style>
 </head>
 <body>
-    <h2>Product Info Extractor</h2>
-    <form id="user-preferences">
-        <div class="form-section">
-            <label><input type="checkbox" id="diabetes" name="diabetes"> Do you have diabetes?</label>
+    <h2>Product Information Extractor</h2>
+    <div id="user-preferences">
+        <label for="diabetes">
+            <input type="checkbox" id="diabetes">
+            Has diabetes
+        </label>
+        <br>
+        <label for="allergies">Allergies:</label>
+        <input type="text" id="allergies" placeholder="e.g., peanuts, gluten">
+        <br>
+        <label for="diet-plan">Diet Plan:</label>
+        <select id="diet-plan">
+            <option value="none">None</option>
+            <option value="keto">Keto</option>
+            <option value="vegan">Vegan</option>
+            <option value="vegetarian">Vegetarian</option>
+            <option value="paleo">Paleo</option>
+        </select>
+        <br><br>
+        <button id="extract-button">Extract Product Info</button>
+    </div>
+
+    <!-- Modal for analysis output -->
+    <div id="analysis-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>Product Analysis Results</h3>
+            <div id="analysis-results"></div>
         </div>
-        <div class="form-section">
-            <label for="allergies">Please mention any allergies you have:</label>
-            <input type="text" id="allergies" name="allergies" placeholder="e.g., Nuts, Gluten, Dairy" style="width: 100%;">
-        </div>
-        <div class="form-section">
-            <label for="diet-plan">Diet Plan:</label>
-            <select id="diet-plan" name="diet-plan">
-                <option value="none">None</option>
-                <option value="vegan">Vegan</option>
-                <option value="vegetarian">Vegetarian</option>
-                <option value="keto">Keto</option>
-                <option value="paleo">Paleo</option>
-            </select>
-        </div>
-        <button type="button" id="extract-button">Extract Product Info</button>
-    </form>
+    </div>
+
     <script src="popup.js"></script>
 </body>
 </html>

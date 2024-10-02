@@ -23,10 +23,10 @@ async function getProductDetails(productName) {
             const nutriscoreGrade = product.nutriscore_grade || "Nutri-Score not available";
 
             // Logging the extracted information
-            console.log(`Product: ${product.product_name}`);
-            console.log(`Ingredients: ${ingredients}`);
-            console.log(`Nutri-Score Grade: ${nutriscoreGrade}`);
-            console.log(`Nutriments:`, nutrients);
+            // console.log(`Product: ${product.product_name}`);
+            // console.log(`Ingredients: ${ingredients}`);
+            // console.log(`Nutri-Score Grade: ${nutriscoreGrade}`);
+            // console.log(`Nutriments:`, nutrients);
 
             return {
                 ingredients: ingredients,
@@ -44,7 +44,7 @@ async function getProductDetails(productName) {
 
     } catch (error) {
         console.error("Error fetching product information:", error);
-        throw new Error("Error fetching product information.");
+        // throw new Error("Error fetching product information.");
     }
 }
 
