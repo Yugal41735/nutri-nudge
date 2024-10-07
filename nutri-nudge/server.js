@@ -47,6 +47,10 @@ app.post('/analyze', async (req, res) => {
       nutrients = "Nutritional information not available";
     }
 
+    // console.log(nutriscoreGrade);
+    // console.log(nutrients);
+    // console.log(ingredients);
+
     let input;
 
     if(ingredients == "Ingredients not available" || nutrients == "Nutritional information not available" || Object.keys(nutrients).length === 0) {
