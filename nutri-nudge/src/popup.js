@@ -76,6 +76,7 @@ document.getElementById('extract-button').addEventListener('click', () => {
                                 analysis = null;
                             }
 
+                            // Raw Output
                             // message += `<br><br><strong>Gemini Analysis (Raw Output):</strong><br>${rawAnalysis}`;
 
                             // Format the analysis data if it was successfully parsed
@@ -83,7 +84,7 @@ document.getElementById('extract-button').addEventListener('click', () => {
                                 message += `<br><br><strong>Gemini Analysis:</strong>`;
                                 
                                 message += `
-                                    <strong>Nutritional Analysis:</strong>
+                                    <br><strong>Nutritional Analysis:</strong>
                                     <ul>
                                         <li><strong>High in:</strong> ${analysis.nutritional_analysis.high_in
                                             ? analysis.nutritional_analysis.high_in.split(', ').map(nutrient => `<span class="badge high-nutrient">${nutrient}</span>`).join(', ')
@@ -102,29 +103,52 @@ document.getElementById('extract-button').addEventListener('click', () => {
                                     }</p>
                                     <strong>Diet Suitability:</strong>
                                     <ul>
-                                        <li><strong>Diabetes:</strong> ${analysis.suitable_for_diabetes.includes("Not")
-                                            ? `<span class="not-suitable">❌ ${analysis.suitable_for_diabetes}</span>`
-                                            : `<span class="suitable">✔ ${analysis.suitable_for_diabetes}</span>`}</li>
-                                        <li><strong>Allergens:</strong><br> ${Object.keys(analysis.allergens).length > 0
+                                    
+                                        <li><strong>Diabetes:</strong> ${analysis.suitable_for_diabetes 
+                                            ? (analysis.suitable_for_diabetes.includes("Not")
+                                                ? `<span class="not-suitable">❌ ${analysis.suitable_for_diabetes}</span>`
+                                                : `<span class="suitable">✔ ${analysis.suitable_for_diabetes}</span>`)
+                                            : `User is not diabetic`
+                                        }</li>
+                                        <li><strong>Allergens:</strong> ${analysis.allergens && Object.keys(analysis.allergens).length > 0
                                             ? Object.entries(analysis.allergens).map(([allergen, value]) => value === "Yes"
                                                 ? `⚠️ Contains ${allergen}`
                                                 : `✔ Free from ${allergen}`).join('<br>')
-                                            : 'No allergens specified'}</li>
-                                        <li><strong>Vegetarian:</strong> ${analysis.Vegetarian === "Yes"
-                                            ? `<span class="suitable">✔ Suitable for vegetarians</span>`
-                                            : `<span class="not-suitable">❌ Not suitable for vegetarians</span>`}</li>
-                                        <li><strong>Keto:</strong> ${analysis.Keto === "Yes"
-                                            ? `<span class="suitable">✔ Suitable for keto</span>`
-                                            : `<span class="not-suitable">❌ Not suitable for keto</span>`}</li>
-                                        <li><strong>Vegan:</strong> ${analysis.Vegan === "Yes"
-                                            ? `<span class="suitable">✔ Suitable for vegans</span>`
-                                            : `<span class="not-suitable">❌ Not suitable for vegans</span>`}</li>
-                                        <li><strong>Paleo:</strong> ${analysis.Paleo === "Yes"
-                                            ? `<span class="suitable">✔ Suitable for paleo</span>`
-                                            : `<span class="not-suitable">❌ Not suitable for paleo</span>`}</li>
+                                            : 'No allergens specified'
+                                        }</li>
+                                        ${analysis.Vegetarian
+                                            ? `<li><strong>Vegetarian:</strong> ${analysis.Vegetarian === "Yes"
+                                                ? `<span class="suitable">✔ Suitable for vegetarians</span>`
+                                                : `<span class="not-suitable">❌ Not suitable for vegetarians</span>`
+                                            }</li>`
+                                            : ""
+                                        }
+                                        ${analysis.Keto
+                                            ? `<li><strong>Keto:</strong> ${analysis.Keto === "Yes" 
+                                                ? `<span class="suitable">✔ Suitable for keto</span>`
+                                                : `<span class="not-suitable">❌ Not suitable for keto</span>`
+                                            }</li>`
+                                            : ""
+                                        }
+                                        ${analysis.Vegan
+                                            ? `<li><strong>Vegan:</strong> ${analysis.Vegan === "Yes"
+                                                ? `<span class="suitable">✔ Suitable for vegans</span>`
+                                                : `<span class="not-suitable">❌ Not suitable for vegans</span>`
+                                            }</li>`
+                                            : ""
+                                        }
+                                        ${analysis.Paleo
+                                            ? `<li><strong>Paleo:</strong> ${analysis.Paleo === "Yes"
+                                                ? `<span class="suitable">✔ Suitable for paleo</span>`
+                                                : `<span class="not-suitable">❌ Not suitable for paleo</span>`
+                                            }</li>`
+                                            : ""
+                                        }
+                                        
                                     </ul>
                                 `;
                             } else {
+                                // Printing Raw output if analysis not found
                                 message += `<br><br><strong>Gemini Analysis (Raw Output):</strong><br>${rawAnalysis}`;
                             }
                         }
