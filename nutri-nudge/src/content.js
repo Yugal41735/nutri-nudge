@@ -13,24 +13,35 @@ function getProductDetails() {
         const nestedContainer = productContainer.querySelector('div.ProductDetails__RemoveMaxHeight-sc-z5f4ag-3.fOPLcr');
 
         if (nestedContainer) {
-            const divs = nestedContainer.querySelectorAll('div');
+            const span = nestedContainer.querySelectorAll('div p span');
 
-            for (let i = 0; i < divs.length; i++) {
-                const labelDiv = divs[i];
-                const nextDiv = divs[i + 1];
+            for (let i = 0; i < span.length; i++) {
+                const labelSpan = span[i];
 
-                if (labelDiv && labelDiv.textContent.includes('Ingredients')) {
-                    if (nextDiv) {
-                        productIngredients = nextDiv.textContent.trim();
+                if (labelSpan && labelSpan.textContent.includes('Ingredients')) {
+                    console.log(labelSpan.textContent);
+                    const pElement = labelSpan.parentElement;
+                    const nextDivElement = pElement.nextElementSibling;
+
+                    if(nextDivElement && nextDivElement.tagName.toLowerCase() === 'div') {
+                        console.log(nextDivElement.textContent);
+                        productIngredients = nextDivElement.textContent.trim();
                     }
+                    
                 }
 
-                if (labelDiv && labelDiv.textContent.includes('Nutrition Information')) {
-                    if (nextDiv) {
-                        productNutrition = nextDiv.textContent.trim();
+                if (labelSpan && labelSpan.textContent.includes('Nutrition Information')) {
+                    console.log(labelSpan.textContent);
+                    const pElement = labelSpan.parentElement;
+                    const nextDivElement = pElement.nextElementSibling;
+
+                    if(nextDivElement && nextDivElement.tagName.toLowerCase() === 'div') {
+                        console.log(nextDivElement.textContent);
+                        productNutrition = nextDivElement.textContent.trim();
                     }
                 }
             }
+
         }
     }
 
