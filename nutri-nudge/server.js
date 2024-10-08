@@ -1,5 +1,7 @@
 // server.js
 
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -7,7 +9,7 @@ const getProductDetails = require('./openFoodFacts');
 
 const app = express();
 const PORT = 3000;
-const apiKey = 'YOUR_API_KEY';  // Replace with your actual API key
+const apiKey = process.env.API_KEY; // Replace with your actual gemini api key
 const genAI = new GoogleGenerativeAI(apiKey);
 
 // Enable CORS for all routes
