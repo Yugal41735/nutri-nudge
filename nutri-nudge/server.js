@@ -7,7 +7,7 @@ const getProductDetails = require('./openFoodFacts');
 
 const app = express();
 const PORT = 3000;
-const apiKey = 'AIzaSyDZHo7J7uLU7WMmRqLwlk5bol8SRXwXlbY';  // Replace with your actual API key
+const apiKey = 'YOUR_API_KEY';  // Replace with your actual API key
 const genAI = new GoogleGenerativeAI(apiKey);
 
 // Enable CORS for all routes
