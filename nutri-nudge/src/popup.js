@@ -60,11 +60,7 @@ document.getElementById('extract-button').addEventListener('click', () => {
 
                         // Add the raw analysis from Gemini model without cleaning or formatting
                         if (analysisData.analysis) {
-                            // Sanitize the raw output and remove unwanted parts like ```json and ```
-                            analysisData.analysis = analysisData.analysis.slice(3);
-                            analysisData.analysis = analysisData.analysis.slice(0,-4);
                             let rawAnalysis = analysisData.analysis;
-                            rawAnalysis = rawAnalysis.replace(/^json\s*/, '').trim();
                             console.log(rawAnalysis);
 
                             // Parse the cleaned JSON string
@@ -87,14 +83,18 @@ document.getElementById('extract-button').addEventListener('click', () => {
                                     <br><strong>Nutritional Analysis:</strong>
                                     <ul>
                                         <li><strong>High in:</strong> ${analysis.nutritional_analysis.high_in
-                                            ? analysis.nutritional_analysis.high_in.split(', ').map(nutrient => `<span class="badge high-nutrient">${nutrient}</span>`).join(', ')
+                                            ? analysis.nutritional_analysis.high_in.map(nutrient => `<span class="badge high-nutrient">${nutrient}</span>`).join(', ')
                                             : 'None'}</li>
                                         <li><strong>Low in:</strong> ${analysis.nutritional_analysis.low_in
-                                            ? analysis.nutritional_analysis.low_in.split(', ').map(nutrient => `<span class="badge low-nutrient">${nutrient}</span>`).join(', ')
+                                            ? analysis.nutritional_analysis.low_in.map(nutrient => `<span class="badge low-nutrient">${nutrient}</span>`).join(', ')
                                             : 'None'}</li>
                                     </ul>
                                     <p><strong>Processing Level:</strong> <span class="processed">${analysis.processed}</span></p>
-                                    <p><strong>Nutrient Deficit:</strong> <span class="nutrient-deficit">${analysis.nutrient_deficit}</span></p>
+                                    ${analysis.nutrient_deficit
+                                        ? `<p><strong>Nutrient Deficit:</strong> <span class="nutrient-deficit">${analysis.nutrient_deficit}</span></p>`
+                                        : "" 
+                                    }
+                                    
                                     <p><strong>Harmful Ingredients:</strong> ${
                                         Object.keys(analysis.harmful_ingredients).length > 0
                                             ? Object.entries(analysis.harmful_ingredients).map(([type, ingredients]) => 
@@ -105,40 +105,40 @@ document.getElementById('extract-button').addEventListener('click', () => {
                                     <ul>
                                     
                                         <li><strong>Diabetes:</strong> ${analysis.suitable_for_diabetes 
-                                            ? (analysis.suitable_for_diabetes.includes("Not")
-                                                ? `<span class="not-suitable">❌ ${analysis.suitable_for_diabetes}</span>`
-                                                : `<span class="suitable">✔ ${analysis.suitable_for_diabetes}</span>`)
+                                            ? (analysis.suitable_for_diabetes.includes("No") || analysis.suitable_for_diabetes.includes("no")
+                                                ? `<span class="not-suitable">❌ Not suitable for people with Diabetes!! </span>`
+                                                : `<span class="suitable">✔ People with Diabetes can eat this :) </span>`)
                                             : `User is not diabetic`
                                         }</li>
                                         <li><strong>Allergens:</strong> ${analysis.allergens && Object.keys(analysis.allergens).length > 0
-                                            ? Object.entries(analysis.allergens).map(([allergen, value]) => value === "Yes"
+                                            ? Object.entries(analysis.allergens).map(([allergen, value]) => value === "Yes" || value === "yes"
                                                 ? `⚠️ Contains ${allergen}`
                                                 : `✔ Free from ${allergen}`).join('<br>')
                                             : 'No allergens specified'
                                         }</li>
-                                        ${analysis.Vegetarian
-                                            ? `<li><strong>Vegetarian:</strong> ${analysis.Vegetarian === "Yes"
+                                        ${analysis.vegetarian
+                                            ? `<li><strong>Vegetarian:</strong> ${analysis.vegetarian === "Yes" || analysis.vegetarian === "yes"
                                                 ? `<span class="suitable">✔ Suitable for vegetarians</span>`
                                                 : `<span class="not-suitable">❌ Not suitable for vegetarians</span>`
                                             }</li>`
                                             : ""
                                         }
-                                        ${analysis.Keto
-                                            ? `<li><strong>Keto:</strong> ${analysis.Keto === "Yes" 
+                                        ${analysis.keto
+                                            ? `<li><strong>Keto:</strong> ${analysis.keto === "Yes" || analysis.keto === "yes"
                                                 ? `<span class="suitable">✔ Suitable for keto</span>`
                                                 : `<span class="not-suitable">❌ Not suitable for keto</span>`
                                             }</li>`
                                             : ""
                                         }
                                         ${analysis.Vegan
-                                            ? `<li><strong>Vegan:</strong> ${analysis.Vegan === "Yes"
+                                            ? `<li><strong>Vegan:</strong> ${analysis.Vegan === "Yes" || analysis.vegan === "yes"
                                                 ? `<span class="suitable">✔ Suitable for vegans</span>`
                                                 : `<span class="not-suitable">❌ Not suitable for vegans</span>`
                                             }</li>`
                                             : ""
                                         }
-                                        ${analysis.Paleo
-                                            ? `<li><strong>Paleo:</strong> ${analysis.Paleo === "Yes"
+                                        ${analysis.paleo
+                                            ? `<li><strong>Paleo:</strong> ${analysis.paleo === "Yes" || analysis.paloe === "yes"
                                                 ? `<span class="suitable">✔ Suitable for paleo</span>`
                                                 : `<span class="not-suitable">❌ Not suitable for paleo</span>`
                                             }</li>`
