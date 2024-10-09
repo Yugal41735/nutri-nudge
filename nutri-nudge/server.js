@@ -27,7 +27,7 @@ const generationConfig = {
   topP: 0.95,
   topK: 64,
   maxOutputTokens: 8192,
-  responseMimeType: "text/plain",
+  responseMimeType: "application/json",
 };
 
 // Route to handle Gemini analysis
@@ -62,29 +62,26 @@ app.post('/analyze', async (req, res) => {
     }
 
     // console.log("Input for Gemini Model:", input);
+    // console.log(userPreferences.dietPlan);
 
 
 
     // Build prompt with user preferences
-    let prompt = `Based on the given nutrient information or ingredients, answer the following question:\n`;
-    prompt += `Nutritional Analysis - Higher presence of nutrients desired in low qty (fats, sugar, sodium, calories)\n`;
-    prompt += `How processed and nutrient deficit is the product?\nHarmful Ingredients present\n`;
-    prompt += "answer following questions in structured format and in json format\n\njson structure should be in below format:\n\n{\n  \"nutritional_analysis\": {\n    \"high_in\": \"Sodium,\n\"low_in\": \"calories, fat\"\n},\n    \"processed\": \"Minimally processed\",\n    \"nutrient_deficit\": \"May be deficient in vitamins and minerals, depending on the specific preparation method.\",\n    \"harmful_ingredients\": {},\n  \"suitable_for_diabetes\": \"Not recommended for people with diabetes due to the high sugar content.\",\n  \"allergens\": { \"Garlic\" : \"Yes\"\n  },\n\"Vegetarian\" : \"Yes\n}\n``` \n\nAbove is just an example, modify it based on ingridients or nutrietents mentioned\nNo need of explanation\nThe things that are mentioned in above example, if it is not mentioned in input, dont include them"
-
-    // Add user preferences to the prompt for personalized analysis
+    let prompt = `Based on the given nutrient information or ingredients, provide a structured analysis for the following questions:\n\n1. Nutritional Analysis - Identify nutrients that are present in higher quantities than desired (e.g., fats, sugar, sodium, calories) and those that are in lower quantities.\n2. Processing Level - Describe how processed the product is from the ingredient and nutritional information present in input and whether it may lack essential nutrients.\n3. Harmful Ingredients - List any potentially harmful ingredients present in the input.\n`;
+    prompt += `4. Nutrient Deficit - Indicate if the input may lack any essential nutrients (e.g., vitamins, minerals).\n`;
     if (userPreferences) {
-      if (userPreferences.diabetes) {
-        prompt += `Does this product suit someone with diabetes?\n`;
-      }
       if (userPreferences.allergies) {
-        prompt += `Does this product contain any of the following allergens: ${userPreferences.allergies}?\n`;
+        prompt += `{\"allergens\" {}} // Mention whether elements mentioned ${userPreferences.allergies} are present in ingridient provided in input or not. Answer in yes or no`;
+        prompt += `\n Dont mention any other elements other than ${userPreferences.allergies} in allergens`;
       }
       if (userPreferences.dietPlan && userPreferences.dietPlan !== 'none') {
-        prompt += `Is this product suitable for a ${userPreferences.dietPlan} diet?\n`;
+        prompt += `6. ${userPreferences.dietPlan} - Determine if the product is suitable for a ${userPreferences.dietPlan} diet from the ingredient or nutritional information present in input. Answer in yes or no\n`;
+      }
+      if (userPreferences.diabetes) {
+        prompt += `7. suitable_for_diabetes - Determine if the product is suitable for someone with diabetes from the information given in input. Answer in yes or no`;
       }
     }
-
-    prompt += `\nProvide the answers in a structured JSON format.\n`;
+    prompt += `\nPlease provide the answers in the following structured JSON format:\n\n{\n  \"nutritional_analysis\": {\n    \"high_in\": [\"sodium\", \"sugar\"],  // List nutrients present in high quantities\n    \"low_in\": [\"fiber\"]             // List nutrients present in low quantities\n  },\n  \"processed\": \"Highly processed\",   // Describe processing level\n  \"nutrient_deficit\": \"May be deficient in vitamins and minerals\", // Describe nutrient deficits, if any\n \"harmful_ingredients\": {           // List harmful ingredients, if any\n    \"Additives\": \"E150d (Caramel Color)\"\n  },\n  },\n}\n\nNotes:\nInclude or exclude fields dynamically based on the user’s input.\nIf a specific question isn't asked, do not include it in the final JSON response.\nThe response will maintain a structured JSON format for easy parsing.`;
 
     const parts = [
       { text: prompt },
