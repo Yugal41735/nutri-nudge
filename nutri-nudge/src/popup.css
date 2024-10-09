@@ -99,6 +99,53 @@ button:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     font-size: 1.2em;
     color: #333;
-    z-index: 2; /* Ensure it appears above other content */
+    z-index: 2; /*Ensure it appears above other content */
     text-align: center;
+}
+
+/* New styling component */
+
+/* Badge styling */
+.badge {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.high-nutrient {
+    background-color: #ffcccc; /* Light red for high nutrients */
+    color: #a94442;
+}
+
+.low-nutrient {
+    background-color: #dff0d8; /* Light green for low nutrients */
+    color: #3c763d;
+}
+
+.processed {
+    color: #d9534f;
+    font-weight: bold;
+}
+
+.nutrient-deficit {
+    color: #f0ad4e;
+    font-style: italic;
+}
+
+.harmful-ingredient {
+    background-color: #f0ad4e;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: bold;
+    color: #8a6d3b;
+}
+
+.suitable {
+    color: #5cb85c; /* Green for suitable items */
+}
+
+.not-suitable {
+    color: #d9534f; /* Red for not suitable items */
 }
