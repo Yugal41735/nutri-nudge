@@ -12,6 +12,12 @@ document.getElementById('extract-button').addEventListener('click', () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, { action: "extractProductInfo" }, async (response) => {
             if (response) {
+                if(response.productIngredients) {
+                    response.productIngredients = 'Ingredients : ' + response.productIngredients + '\n';
+                }
+                if(response.productNutrition) {
+                    response.productNutrition = 'Nutrion : ' + response.productNutrition + '\n';
+                }
                 let ingredientsOrNutrition = response.productIngredients || response.productNutrition;
                 let productName = response.productName;
 
@@ -60,20 +66,27 @@ document.getElementById('extract-button').addEventListener('click', () => {
 
                         // Add the raw analysis from Gemini model without cleaning or formatting
                         if (analysisData.analysis) {
-                            let rawAnalysis = analysisData.analysis;
+                            let rawAnalysis = analysisData.analysis.split('*');
+                            let alternativeRawAnalysis = rawAnalysis[1];
+                            rawAnalysis = rawAnalysis[0];
                             console.log(rawAnalysis);
 
                             // Parse the cleaned JSON string
-                            let analysis;
+                            let analysis, alternativeAnalysis;
                             try {
                                 analysis = JSON.parse(rawAnalysis);
+                                alternativeAnalysis = JSON.parse(alternativeRawAnalysis);
+                                // analysis = analysis[0];
+                                // console.log(analysis);
                             } catch (error) {
                                 console.error("Error parsing analysis data:", error);
                                 analysis = null;
+                                alternativeRawAnalysis = null;
                             }
 
                             // Raw Output
                             // message += `<br><br><strong>Gemini Analysis (Raw Output):</strong><br>${rawAnalysis}`;
+                            // message += `<br><br><strong>Gemini Analysis (Raw Output):</strong><br>${alternativeRawAnalysis}`;
 
                             // Format the analysis data if it was successfully parsed
                             if (analysis) {
@@ -151,7 +164,18 @@ document.getElementById('extract-button').addEventListener('click', () => {
                                 // Printing Raw output if analysis not found
                                 message += `<br><br><strong>Gemini Analysis (Raw Output):</strong><br>${rawAnalysis}`;
                             }
+
+                            if(alternativeAnalysis && alternativeRawAnalysis.length>2) {
+                                message += `<br><strong>Alternative Recommendation:</strong>`;
+                                message += `
+                                    <ul>
+                                        <li><strong>Product Name:</strong> <span class="badge alternative-product">${alternativeAnalysis.alternative_recommendation.product_name}</span></li>
+                                    </ul>
+                                `
+                            }
                         }
+
+                        
 
                         // Add user preferences to the output
                         message += `<br><br><strong>User Preferences:</strong><br>`;
