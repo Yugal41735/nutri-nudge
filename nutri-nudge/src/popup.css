@@ -149,3 +149,11 @@ button:hover {
 .not-suitable {
     color: #d9534f; /* Red for not suitable items */
 }
+
+.badge.alternative-product {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+}
