@@ -53,12 +53,12 @@ app.post('/analyze', async (req, res) => {
     // console.log(nutrients);
     // console.log(ingredients);
 
-    let input;
+    let input = 'Product Name: ' + productName + '\n';
 
     if(ingredients == "Ingredients not available" || nutrients == "Nutritional information not available" || Object.keys(nutrients).length === 0) {
-      input = ingredientsOrNutrition;
+      input += ingredientsOrNutrition;
     } else {
-      input = ingredients + "\n\n" + nutrients;
+      input += 'Ingredients: '+ingredients + "\n\n" + 'Nutrients: ' + nutrients;
     }
 
     // console.log("Input for Gemini Model:", input);
@@ -70,21 +70,47 @@ app.post('/analyze', async (req, res) => {
     let prompt = `Based on the given nutrient information or ingredients, provide a structured analysis for the following questions:\n\n1. Nutritional Analysis - Identify nutrients that are present in higher quantities than desired (e.g., fats, sugar, sodium, calories) and those that are in lower quantities.\n2. Processing Level - Describe how processed the product is from the ingredient and nutritional information present in input and whether it may lack essential nutrients.\n3. Harmful Ingredients - List any potentially harmful ingredients present in the input.\n`;
     prompt += `4. Nutrient Deficit - Indicate if the input may lack any essential nutrients (e.g., vitamins, minerals).\n`;
     if (userPreferences) {
+      
       if (userPreferences.allergies) {
         prompt += `{\"allergens\" {}} // Mention whether elements mentioned ${userPreferences.allergies} are present in ingridient provided in input or not. Answer in yes or no`;
         prompt += `\n Dont mention any other elements other than ${userPreferences.allergies} in allergens`;
       }
       if (userPreferences.dietPlan && userPreferences.dietPlan !== 'none') {
-        prompt += `6. ${userPreferences.dietPlan} - Determine if the product is suitable for a ${userPreferences.dietPlan} diet from the ingredient or nutritional information present in input. Answer in yes or no\n`;
+        prompt += `\n6. ${userPreferences.dietPlan} - Determine if the product is suitable for a ${userPreferences.dietPlan} diet from the ingredient or nutritional information present in input. Answer in yes or no\n`;
       }
       if (userPreferences.diabetes) {
         prompt += `7. suitable_for_diabetes - Determine if the product is suitable for someone with diabetes from the information given in input. Answer in yes or no`;
       }
     }
+
+    let alternative_prompt = '';
+
+    if((userPreferences.allergies || userPreferences.diabetes) || (userPreferences.dietPlan && userPreferences.dietPlan !== 'none')) {
+      alternative_prompt += `\n8. If any of the following conditions are met, suggest alternative products that may be better suited for the user:\n`;
+    
+      if(userPreferences.allergies) {
+        alternative_prompt += ` - ${productName} contains allergens that the user is sensitive to. Recommend an alternative product which does not contain allergens: ${userPreferences.allergies}\n`;
+      }
+      if(userPreferences.dietPlan && userPreferences.dietPlan !== 'none') {
+        alternative_prompt += `- ${productName} is not suitable for people with ${userPreferences.dietPlan} diet plan. Suggest a compliant alternative from a similar category\n`;
+      }
+      if(userPreferences.diabetes) {
+        alternative_prompt += `- ${productName} is not suitable for people with diabetes. Recommend a sugar free alternative.\n`;
+      }
+      alternative_prompt += `{\"alternative_recommendation\" : {\"product_name\": } } // Mention alternatives in this format\n`;
+      // alternative_prompt += `Keep reason short.`;
+    }
+    // console.log(alternative_prompt);
     prompt += `\nPlease provide the answers in the following structured JSON format:\n\n{\n  \"nutritional_analysis\": {\n    \"high_in\": [\"sodium\", \"sugar\"],  // List nutrients present in high quantities\n    \"low_in\": [\"fiber\"]             // List nutrients present in low quantities\n  },\n  \"processed\": \"Highly processed\",   // Describe processing level\n  \"nutrient_deficit\": \"May be deficient in vitamins and minerals\", // Describe nutrient deficits, if any\n \"harmful_ingredients\": {           // List harmful ingredients, if any\n    \"Additives\": \"E150d (Caramel Color)\"\n  },\n  },\n}\n\nNotes:\nInclude or exclude fields dynamically based on the user’s input.\nIf a specific question isn't asked, do not include it in the final JSON response.\nThe response will maintain a structured JSON format for easy parsing.`;
 
     const parts = [
       { text: prompt },
+      { text: `input: ${input}\n\n` },
+      { text: "output: " },
+    ];
+
+    const alternative_parts = [
+      { text: alternative_prompt },
       { text: `input: ${input}\n\n` },
       { text: "output: " },
     ];
@@ -94,7 +120,20 @@ app.post('/analyze', async (req, res) => {
       generationConfig,
     });
 
-    res.json({ analysis: result.response.text() });
+    const alternative_result = await model.generateContent({
+      contents: [{role: "user", parts: alternative_parts}],
+      generationConfig,
+    });
+
+    let alternative_text = alternative_result.response.text();
+
+    if(alternative_prompt.length == 0) {
+      alternative_text = '{}';
+    }
+
+    // console.log(alternative_result.response.text());
+
+    res.json({ analysis: result.response.text() + '*' + alternative_text });
   } catch (error) {
     console.error("Error analyzing data:", error);
     res.status(500).json({ error: "Error analyzing data" });
