@@ -16,17 +16,105 @@ document.getElementById('extract-button').addEventListener('click', () => {
                     response.productIngredients = 'Ingredients : ' + response.productIngredients + '\n';
                 }
                 if(response.productNutrition) {
-                    response.productNutrition = 'Nutrion : ' + response.productNutrition + '\n';
+                    response.productNutrition = 'Nutrition : ' + response.productNutrition + '\n';
                 }
+                let ingredientsWebsite = response.productIngredients || ''
+                let nutritionWebsite = response.productNutrition || ''
                 let ingredientsOrNutrition = response.productIngredients || response.productNutrition;
                 let productName = response.productName;
 
-                if (ingredientsOrNutrition) {
+                let ingredientsAPI, nutrientsAPI, nutriscoreGradeAPI;
+
+                let message = ``;
+
+                try {
+                    const requestedData = {
+                        productName
+                    }
+
+                    const productResponse = await fetch('http://localhost:3000/refactor', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestedData)
+
+                    });
+
+                    if (!productResponse.ok) {
+                        throw new Error(`Server responded with status ${productResponse.status}`);
+                    }
+
+                    
+
+                    const productData = await productResponse.json();
+
+                    if(productData.analysis) {
+                        const rawAnalysis = productData.analysis;
+
+                        // raw output of refined product name
+                        // message += `<br><br><strong>Gemini Product Name Analysis (Raw Output):</strong><br>${rawAnalysis}<br>`;
+
+
+                        let analysis;
+
+                        try {
+                            analysis = JSON.parse(rawAnalysis);
+                        } catch (error) {
+                            console.error("Error parsing product name data:", error);
+                            analysis = null;
+                        }
+
+                        if(analysis) {
+                            productName = analysis.product_name;
+                        }
+
+
+                    }
+
+                    const productDetailResponse = await fetch('http://localhost:3000/productDetail', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestedData)
+
+                    });
+
+                    if (!productDetailResponse.ok) {
+                        throw new Error(`Server responded with status ${productDetailResponse.status}`);
+                    }
+
+                    const productDetailData = await productDetailResponse.json();
+
+
+                    if(productDetailData) {
+                        const rawAnalysis = productDetailData;
+
+                        ingredientsAPI = rawAnalysis.ingredients;
+                        nutrientsAPI = rawAnalysis.nutrients;
+
+                        // raw output of refined product details, would not give viewable output, as rawanalysis is a json object
+                        // message += `<br><br><strong>Gemini Product Detail Analysis (Raw Output):</strong><br>${rawAnalysis.ingredients}<br>`;
+                    }
+
+                } catch(error) {
+                    loadingElement.style.display = 'none';
+
+                        // Log error details to the console
+                    console.error("Error processing product name:", error);
+                    alert("Error processing product name. Check console for details.");
+                }
+
+
+                if (ingredientsOrNutrition || ingredientsAPI || nutrientsAPI) {
                     try {
                         // Prepare the data to be sent to the backend, including user preferences
                         const requestData = {
                             productName,
                             ingredientsOrNutrition,
+                            ingredientsAPI,
+                            nutrientsAPI,
                             userPreferences: {
                                 diabetes,
                                 allergies,
@@ -56,7 +144,7 @@ document.getElementById('extract-button').addEventListener('click', () => {
                         console.log("Analysis Response from Backend:", analysisData);
 
                         // Populate the modal with analysis results
-                        let message = `<strong>Product:</strong> ${response.productName || 'N/A'}`;
+                        message += `<strong>Product:</strong> ${productName}`;
                         if (response.productIngredients) {
                             message += `<br><strong>Ingredients:</strong> ${response.productIngredients}`;
                         }
