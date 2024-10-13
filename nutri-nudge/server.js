@@ -30,10 +30,11 @@ const generationConfig = {
   responseMimeType: "application/json",
 };
 
-// Route to handle Gemini analysis
-app.post('/analyze', async (req, res) => {
+
+// Route to handle product details
+app.post('/productDetail', async (req, res) => {
   try {
-    const { productName, ingredientsOrNutrition, userPreferences } = req.body;
+    const { productName } = req.body;
 
     let ingredients, nutrients, nutriscoreGrade;
 
@@ -49,7 +50,59 @@ app.post('/analyze', async (req, res) => {
       nutrients = "Nutritional information not available";
     }
 
-    // console.log(nutriscoreGrade);
+    const result = {
+      ingredients: ingredients,
+      nutrients: nutrients,
+      nutriscoreGrade: nutriscoreGrade
+    };
+
+    res.json(result);
+  } catch (error) {
+    console.error("Error analyzing data:", error);
+    res.status(500).json({ error: "Error analyzing data" });
+  }
+});
+
+// Route to handle product name
+app.post('/refactor', async (req, res) => {
+  try {
+    const { productName } = req.body;
+
+
+    let input = productName;
+
+    // Build prompt with user preferences
+    let prompt = `Extract product name from the input, and remove any unnecessary details like its weight or any other other details from the product name.\n{\"product_name\": }`;
+
+    const parts = [
+      { text: prompt },
+      { text: `input: ${input}\n\n` },
+      { text: "output: " },
+    ];
+
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts }],
+      generationConfig,
+    });
+
+    // console.log(result.response.text());
+
+    res.json({ analysis: result.response.text() });
+  } catch (error) {
+    console.error("Error analyzing data:", error);
+    res.status(500).json({ error: "Error analyzing data" });
+  }
+});
+
+// Route to handle Gemini analysis
+app.post('/analyze', async (req, res) => {
+  try {
+    const { productName, ingredientsOrNutrition, ingredientsAPI, nutrientsAPI, userPreferences } = req.body;
+
+
+    let ingredients = ingredientsAPI;
+    let nutrients = nutrientsAPI;
+
     // console.log(nutrients);
     // console.log(ingredients);
 
@@ -58,7 +111,7 @@ app.post('/analyze', async (req, res) => {
     if(ingredients == "Ingredients not available" || nutrients == "Nutritional information not available" || Object.keys(nutrients).length === 0) {
       input += ingredientsOrNutrition;
     } else {
-      input += 'Ingredients: '+ingredients + "\n\n" + 'Nutrients: ' + nutrients;
+      input += 'Ingredients: '+ ingredients + "\n\n" + 'Nutrients: ' + nutrients;
     }
 
     // console.log("Input for Gemini Model:", input);
