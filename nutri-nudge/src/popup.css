@@ -1,76 +1,96 @@
+/* Import Google Fonts for better typography */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
-    padding: 20px; /* Add padding for better appearance */
-    max-width: 100%; /* Ensure it can use full popup width */
+    font-family: 'Roboto', sans-serif; /* Updated font */
+    padding: 20px;
+    max-width: 100%;
+    background-color: #f9f9f9; /* Light background for better contrast */
 }
 
 h2 {
     text-align: center;
     margin-bottom: 20px;
+    font-weight: 500; /* Medium font weight */
+    color: #333; /* Darker color for better readability */
 }
 
 #user-preferences {
-    font-size: 1.1rem; /* Increase font size for better readability */
-    line-height: 1.8;
+    font-size: 1rem; /* Adjusted font size for consistency */
+    line-height: 1.6; /* Slightly reduced for better spacing */
+    color: #555; /* Softer text color */
 }
 
 label {
     margin-top: 10px;
     display: block;
+    font-weight: 500; /* Medium font weight for emphasis */
+    color: #333;
 }
 
 input[type="text"], select {
-    width: 100%; /* Make sure inputs take the full width */
+    width: 100%;
     padding: 10px;
     margin-top: 5px;
     margin-bottom: 15px;
     font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 4px;
+    background-color: #fff; /* White background for inputs */
+    color: #333;
+}
+
+input[type="text"]:focus, select:focus {
+    border-color: #66afe9; /* Blue border on focus */
+    outline: none;
+    box-shadow: 0 0 5px rgba(102, 175, 233, 0.6); /* Glow effect */
 }
 
 button {
-    width: 100%; /* Take the full width of the container */
+    width: 100%;
     padding: 15px;
     font-size: 1.1rem;
-    background-color: #4CAF50;
+    background-color: #007bff; /* Bootstrap primary color */
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-weight: 500; /* Medium font weight */
+    transition: background-color 0.3s ease; /* Smooth hover transition */
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #0056b3; /* Darker blue on hover */
 }
 
 .modal {
-    display: none; 
-    position: fixed; 
-    z-index: 1; 
+    display: none;
+    position: fixed;
+    z-index: 1000; /* Increased z-index to ensure modal is on top */
     left: 0;
     top: 0;
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0,0,0,0.4); 
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5); /* Darker overlay */
 }
 
 .modal-content {
-    background-color: #fefefe;
-    margin: 3% auto; 
+    background-color: #fff; /* White background for modal */
+    margin: 3% auto;
     padding: 20px;
-    border: 1px solid #888;
-    width: 90%; 
-    max-width: 1200px;
+    border: none; /* Removed border for cleaner look */
+    width: 90%;
+    max-width: 800px; /* Reduced max-width for better readability */
     max-height: 85vh;
     border-radius: 10px;
-    overflow-y: auto; /* Allow scrolling */
+    overflow-y: auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Added shadow for depth */
 }
 
 .close-button {
     color: #aaa;
     float: right;
-    font-size: 28px;
+    font-size: 24px; /* Adjusted font size */
     font-weight: bold;
     cursor: pointer;
 }
@@ -79,13 +99,13 @@ button:hover {
 .close-button:focus {
     color: #000;
     text-decoration: none;
-    cursor: pointer;
 }
 
 #analysis-results {
     margin-top: 15px;
     font-size: 1rem;
-    line-height: 1.5;
+    line-height: 1.6;
+    color: #333;
 }
 
 #loading-message {
@@ -94,66 +114,101 @@ button:hover {
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: #ffffff;
-    padding: 15px;
+    padding: 20px; /* Increased padding for better spacing */
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    font-size: 1.2em;
+    font-size: 1.1em;
     color: #333;
-    z-index: 2; /*Ensure it appears above other content */
+    z-index: 2000; /* Ensure it appears above modal */
     text-align: center;
 }
 
-/* New styling component */
+/* Badge Styling */
 
-/* Badge styling */
 .badge {
     display: inline-block;
-    padding: 5px 10px;
-    margin: 5px 0;
-    border-radius: 5px;
-    font-size: 0.9rem;
+    padding: 6px 12px; /* Increased padding for better look */
+    margin: 5px 5px 5px 0;
+    border-radius: 15px; /* Rounded badges */
+    font-size: 0.85rem;
+    font-weight: 500; /* Medium font weight */
 }
 
 .high-nutrient {
-    background-color: #ffcccc; /* Light red for high nutrients */
-    color: #a94442;
+    background-color: #f8d7da; /* Soft red background */
+    color: #721c24; /* Dark red text */
 }
 
 .low-nutrient {
-    background-color: #dff0d8; /* Light green for low nutrients */
-    color: #3c763d;
+    background-color: #d4edda; /* Soft green background */
+    color: #155724; /* Dark green text */
 }
 
 .processed {
-    color: #d9534f;
+    color: #dc3545; /* Bootstrap danger color */
     font-weight: bold;
 }
 
 .nutrient-deficit {
-    color: #f0ad4e;
+    color: #ffc107; /* Bootstrap warning color */
     font-style: italic;
 }
 
 .harmful-ingredient {
-    background-color: #f0ad4e;
-    padding: 2px 5px;
-    border-radius: 3px;
+    background-color: #fff3cd; /* Soft yellow background */
+    padding: 5px 10px;
+    border-radius: 5px;
     font-weight: bold;
-    color: #8a6d3b;
+    color: #856404; /* Dark yellow text */
 }
 
 .suitable {
-    color: #5cb85c; /* Green for suitable items */
+    color: #28a745; /* Bootstrap success color */
+    font-weight: 500;
 }
 
 .not-suitable {
-    color: #d9534f; /* Red for not suitable items */
+    color: #dc3545; /* Bootstrap danger color */
+    font-weight: 500;
 }
 
 .badge.alternative-product {
-    background-color: #007bff;
+    background-color: #17a2b8; /* Bootstrap info color */
     color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 0.9em;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 0.85em;
+    cursor: pointer; /* Pointer cursor to indicate clickability */
+    transition: background-color 0.3s ease;
+}
+
+.badge.alternative-product:hover {
+    background-color: #117a8b; /* Darker blue on hover */
+}
+
+a {
+    text-decoration: none;
+    color: inherit; /* Inherit color from parent */
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Adjustments */
+
+@media (max-width: 600px) {
+    .modal-content {
+        width: 95%;
+        margin: 5% auto;
+    }
+
+    button {
+        font-size: 1rem;
+        padding: 12px;
+    }
+
+    .badge {
+        font-size: 0.8rem;
+    }
 }
