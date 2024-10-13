@@ -167,9 +167,18 @@ document.getElementById('extract-button').addEventListener('click', () => {
 
                             if(alternativeAnalysis && alternativeRawAnalysis.length>2) {
                                 message += `<br><strong>Alternative Recommendation:</strong>`;
+                                // message += `
+                                //     <ul>
+                                //         <li><strong>Product Name:</strong> <span class="badge alternative-product">${alternativeAnalysis.alternative_recommendation.product_name}</span></li>
+                                //     </ul>
+                                // `
                                 message += `
                                     <ul>
-                                        <li><strong>Product Name:</strong> <span class="badge alternative-product">${alternativeAnalysis.alternative_recommendation.product_name}</span></li>
+                                        <li><strong>Product Name:</strong>
+                                            <a href = "https://blinkit.com/s/?q=${alternativeAnalysis.alternative_recommendation.product_name}" target="_blank" rel="noopener noreferrer" class="badge alternative-product">
+                                                ${alternativeAnalysis.alternative_recommendation.product_name}
+                                            </a>
+                                        </li>
                                     </ul>
                                 `
                             }
