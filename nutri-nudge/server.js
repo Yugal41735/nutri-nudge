@@ -75,32 +75,14 @@ app.post('/analyze', async (req, res) => {
         prompt += `{\"allergens\" {}} // Mention whether elements mentioned ${userPreferences.allergies} are present in ingridient provided in input or not. Answer in yes or no`;
         prompt += `\n Dont mention any other elements other than ${userPreferences.allergies} in allergens`;
       }
-      if (userPreferences.dietPlan && userPreferences.dietPlan !== 'none') {
+      if (userPreferences.dietPlan && userPreferences.dietPlan.toLowerCase() !== 'none') {
         prompt += `\n6. ${userPreferences.dietPlan} - Determine if the product is suitable for a ${userPreferences.dietPlan} diet from the ingredient or nutritional information present in input. Answer in yes or no\n`;
       }
       if (userPreferences.diabetes) {
         prompt += `7. suitable_for_diabetes - Determine if the product is suitable for someone with diabetes from the information given in input. Answer in yes or no`;
       }
     }
-
-    let alternative_prompt = '';
-
-    if((userPreferences.allergies || userPreferences.diabetes) || (userPreferences.dietPlan && userPreferences.dietPlan !== 'none')) {
-      alternative_prompt += `\n8. If any of the following conditions are met, suggest alternative products that may be better suited for the user:\n`;
     
-      if(userPreferences.allergies) {
-        alternative_prompt += ` - ${productName} contains allergens that the user is sensitive to. Recommend an alternative product which does not contain allergens: ${userPreferences.allergies}\n`;
-      }
-      if(userPreferences.dietPlan && userPreferences.dietPlan !== 'none') {
-        alternative_prompt += `- ${productName} is not suitable for people with ${userPreferences.dietPlan} diet plan. Suggest a compliant alternative from a similar category\n`;
-      }
-      if(userPreferences.diabetes) {
-        alternative_prompt += `- ${productName} is not suitable for people with diabetes. Recommend a sugar free alternative.\n`;
-      }
-      alternative_prompt += `{\"alternative_recommendation\" : {\"product_name\": } } // Mention alternatives in this format\n`;
-      // alternative_prompt += `Keep reason short.`;
-    }
-    // console.log(alternative_prompt);
     prompt += `\nPlease provide the answers in the following structured JSON format:\n\n{\n  \"nutritional_analysis\": {\n    \"high_in\": [\"sodium\", \"sugar\"],  // List nutrients present in high quantities\n    \"low_in\": [\"fiber\"]             // List nutrients present in low quantities\n  },\n  \"processed\": \"Highly processed\",   // Describe processing level\n  \"nutrient_deficit\": \"May be deficient in vitamins and minerals\", // Describe nutrient deficits, if any\n \"harmful_ingredients\": {           // List harmful ingredients, if any\n    \"Additives\": \"E150d (Caramel Color)\"\n  },\n  },\n}\n\nNotes:\nInclude or exclude fields dynamically based on the user’s input.\nIf a specific question isn't asked, do not include it in the final JSON response.\nThe response will maintain a structured JSON format for easy parsing.`;
 
     const parts = [
@@ -109,16 +91,56 @@ app.post('/analyze', async (req, res) => {
       { text: "output: " },
     ];
 
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts }],
+      generationConfig,
+    });
+
+    let parsed_result;
+    try {
+      parsed_result = JSON.parse(result.response.text());
+    } catch(error) {
+      console.error("Error parsing Gemini response:", error);
+      return res.status(500).json({ error: "Failed to parse Gemini response." });
+    }
+
+    const suitableForDiabetes = parsed_result.suitable_for_diabetes;
+    const allergens = parsed_result.allergens || {};
+    const dietPlanSuitability = parsed_result[userPreferences.dietPlan];
+
+    let hasAllergens;
+
+    if(allergens) {
+      hasAllergens = Object.values(allergens).some(value => value.toLowerCase() === "yes");
+    }
+
+    // console.log(hasAllergens);
+    // console.log(suitableForDiabetes);
+    // console.log(dietPlanSuitability);
+
+    let alternative_prompt = '';
+
+    if(hasAllergens || (suitableForDiabetes && suitableForDiabetes.toLowerCase() === "no") || (dietPlanSuitability && dietPlanSuitability.toLowerCase() === "no")) {
+      alternative_prompt += `\n8. If any of the following conditions are met, suggest alternative products that may be better suited for the user:\n`;
+    
+      if(hasAllergens) {
+        alternative_prompt += ` - ${productName} contains allergens that the user is sensitive to. Recommend an alternative product which does not contain allergens: ${userPreferences.allergies}\n`;
+      }
+      if(dietPlanSuitability && dietPlanSuitability.toLowerCase() === "no") {
+        alternative_prompt += `- ${productName} is not suitable for people with ${userPreferences.dietPlan} diet plan. Suggest a compliant alternative from a similar category\n`;
+      }
+      if(suitableForDiabetes && suitableForDiabetes.toLowerCase() === "no") {
+        alternative_prompt += `- ${productName} is not suitable for people with diabetes. Recommend a sugar free alternative.\n`;
+      }
+      alternative_prompt += `{\"alternative_recommendation\" : {\"product_name\": } } // Mention alternatives in this format\n`;
+      // alternative_prompt += `Keep reason short.`;
+    }
+
     const alternative_parts = [
       { text: alternative_prompt },
       { text: `input: ${input}\n\n` },
       { text: "output: " },
     ];
-
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts }],
-      generationConfig,
-    });
 
     const alternative_result = await model.generateContent({
       contents: [{role: "user", parts: alternative_parts}],
