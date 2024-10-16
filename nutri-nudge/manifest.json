@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Blinkit Product Info Extractor",
+  "name": "Nutri-Nudge",
   "version": "1.0",
   "description": "Extracts product ingredients and nutrition information from Blinkit and processes images using Gemini API.",
   "permissions": [
