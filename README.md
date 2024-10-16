@@ -84,6 +84,9 @@ Below are some screenshots of the **NutriNudge** extension in action:
 3. **Product Analysis Results**:
    ![Product Analysis Results](screenshots/pic_3.png)
 
+4. **Product Recommendation and NutriScore Grade**:
+   ![Product Recommendation](screenshots/pic_5.png)
+
 ## Technologies Used
 
 - **JavaScript**: For DOM manipulation and handling events.
