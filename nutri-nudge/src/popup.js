@@ -93,6 +93,7 @@ document.getElementById('extract-button').addEventListener('click', () => {
 
                         ingredientsAPI = rawAnalysis.ingredients;
                         nutrientsAPI = rawAnalysis.nutrients;
+                        nutriscoreGradeAPI = rawAnalysis.nutriscoreGrade;
 
                         // raw output of refined product details, would not give viewable output, as rawanalysis is a json object
                         // message += `<br><br><strong>Gemini Product Detail Analysis (Raw Output):</strong><br>${rawAnalysis.ingredients}<br>`;
@@ -145,12 +146,19 @@ document.getElementById('extract-button').addEventListener('click', () => {
 
                         // Populate the modal with analysis results
                         message += `<strong>Product:</strong> ${productName}`;
-                        if (response.productIngredients) {
-                            message += `<br><strong>Ingredients:</strong> ${response.productIngredients}`;
+                        if(ingredientsAPI && ingredientsAPI !== "Ingredients not available") {
+                            message += `<br><strong>Ingredients:</strong> ${ingredientsAPI} `;
+                        } else if (response.productIngredients) {
+                            message += `<br><strong>Ingredients:</strong> ${response.productIngredients.substring(13)}`;
                         }
-                        if (response.productNutrition) {
-                            message += `<br><strong>Nutrition Information:</strong> ${response.productNutrition}`;
-                        }
+
+                        // not showing nutrition information, since it does not add value for normal people
+                        // if(nutrientsAPI && (nutrientsAPI == "Nutritional information not available" || Object.keys(nutrientsAPI).length === 0)) {
+                        //     message += `<br><strong>Nutrition Information:</strong> ${nutrientsAPI}`;
+                        // }
+                        // else if (response.productNutrition) {
+                        //     message += `<br><strong>Nutrition Information:</strong> ${response.productNutrition.substring(12)}`;
+                        // }
 
                         // Add the raw analysis from Gemini model without cleaning or formatting
                         if (analysisData.analysis) {
@@ -255,11 +263,7 @@ document.getElementById('extract-button').addEventListener('click', () => {
 
                             if(alternativeAnalysis && alternativeRawAnalysis.length>2) {
                                 message += `<br><strong>Alternative Recommendation:</strong>`;
-                                // message += `
-                                //     <ul>
-                                //         <li><strong>Product Name:</strong> <span class="badge alternative-product">${alternativeAnalysis.alternative_recommendation.product_name}</span></li>
-                                //     </ul>
-                                // `
+                                
                                 message += `
                                     <ul>
                                         <li><strong>Product Name:</strong>
@@ -270,6 +274,19 @@ document.getElementById('extract-button').addEventListener('click', () => {
                                     </ul>
                                 `
                             }
+                            
+
+                            let nutriscoreGrade = nutriscoreGradeAPI && ['a', 'b', 'c', 'd', 'e'].includes(nutriscoreGradeAPI.toLowerCase()) ? nutriscoreGradeAPI.toLowerCase() : "unknown";
+                            let nutriscoreImagePath = `/nutriscore_grades/nutriscore-${nutriscoreGrade}-new-en.svg`;
+
+                            // Dynamically insert the Nutri-Score image
+                            message += `
+                                <div>
+                                    <strong>Nutri-Score:</strong>
+                                    <img src="${nutriscoreImagePath}" alt="Nutri-Score" style="display: inline-block; vertical-align: middle; width: 100px;" />
+                                </div>`;
+
+
                         }
 
                         
