@@ -186,10 +186,9 @@ document.getElementById('extract-button').addEventListener('click', () => {
 
                             // Format the analysis data if it was successfully parsed
                             if (analysis) {
-                                message += `<br><br><strong>Gemini Analysis:</strong>`;
                                 
                                 message += `
-                                    <br><strong>Nutritional Analysis:</strong>
+                                    <br><br><strong>Nutritional Analysis:</strong>
                                     <ul>
                                         <li><strong>High in:</strong> ${analysis.nutritional_analysis.high_in
                                             ? analysis.nutritional_analysis.high_in.map(nutrient => `<span class="badge high-nutrient">${nutrient}</span>`).join(', ')
