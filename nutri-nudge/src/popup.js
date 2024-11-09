@@ -32,7 +32,7 @@ document.getElementById('extract-button').addEventListener('click', () => {
                         productName
                     }
 
-                    const productResponse = await fetch('http://localhost:3000/refactor', {
+                    const productResponse = await fetch('https://nutri-nudge.vercel.app/refactor', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ document.getElementById('extract-button').addEventListener('click', () => {
 
                     }
 
-                    const productDetailResponse = await fetch('http://localhost:3000/productDetail', {
+                    const productDetailResponse = await fetch('https://nutri-nudge.vercel.app/productDetail', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ document.getElementById('extract-button').addEventListener('click', () => {
                         };
 
                         // Send the data to the backend for analysis
-                        const analysisResponse = await fetch('http://localhost:3000/analyze', {
+                        const analysisResponse = await fetch('https://nutri-nudge.vercel.app/analyze', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
