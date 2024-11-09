@@ -12,7 +12,7 @@ const PORT = 3000;
 const apiKey = process.env.API_KEY; // Replace with your actual gemini api key
 const genAI = new GoogleGenerativeAI(apiKey);
 
-console.log(apiKey);
+// console.log(apiKey);
 
 // Enable CORS for all routes
 app.use(cors());
@@ -34,6 +34,7 @@ const generationConfig = {
 
 
 app.get("/", (req, res) => res.send("Express on Vercel"));
+app.get("/apiKey", (req, res) => res.send("API_KEY", apiKey));
 
 
 // Route to handle product details
