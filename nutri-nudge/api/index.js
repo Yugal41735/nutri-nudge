@@ -30,6 +30,8 @@ const generationConfig = {
   responseMimeType: "application/json",
 };
 
+app.get("/", (req, res) => res.send("Express on Vercel"));
+
 
 // Route to handle product details
 app.post('/productDetail', async (req, res) => {
@@ -213,6 +215,10 @@ app.post('/analyze', async (req, res) => {
     console.error("Error analyzing data:", error);
     res.status(500).json({ error: "Error analyzing data" });
   }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
 
 module.exports = app
