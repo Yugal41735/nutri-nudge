@@ -34,7 +34,7 @@ const generationConfig = {
 
 
 app.get("/", (req, res) => res.send("Express on Vercel"));
-app.get("/apiKey", (req, res) => res.send("API_KEY", apiKey));
+app.get("/apiKey", (req, res) => res.send(apiKey));
 
 
 // Route to handle product details
