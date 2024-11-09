@@ -12,6 +12,8 @@ const PORT = 3000;
 const apiKey = process.env.API_KEY; // Replace with your actual gemini api key
 const genAI = new GoogleGenerativeAI(apiKey);
 
+console.log(apiKey);
+
 // Enable CORS for all routes
 app.use(cors());
 
