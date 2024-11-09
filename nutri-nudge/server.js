@@ -31,6 +31,9 @@ const generationConfig = {
 };
 
 
+app.get("/", (req, res) => res.send("Express on Vercel"));
+
+
 // Route to handle product details
 app.post('/productDetail', async (req, res) => {
   try {
