@@ -1,16 +1,14 @@
 {
   "manifest_version": 3,
   "name": "Nutri-Nudge",
-  "version": "1.0",
+  "version": "0.1.0",
   "description": "Gives health analysis report, based on user preferrences",
   "permissions": [
     "activeTab",
-    "storage",
-    "scripting"
+    "storage"
   ],
   "host_permissions": [
-    "https://*.blinkit.com/*",
-    "https://*.google.com/*"
+    "https://*.blinkit.com/*"
   ],
   "background": {
     "service_worker": "dist/background.bundle.js"
