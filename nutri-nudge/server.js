@@ -285,7 +285,8 @@ async function withRetry(operation, options = RETRY_OPTIONS) {
       // Only retry on 503 errors or network-related errors
       if (!error.message.includes('503') && 
           !error.message.includes('overloaded') && 
-          !error.message.includes('network')) {
+          !error.message.includes('network') && 
+          !error.message.includes('504')) {
         throw error;
       }
 
